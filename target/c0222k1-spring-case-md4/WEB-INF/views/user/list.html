@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="en">
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Dashboard 1 | Velonic - Responsive Admin Dashboard Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Responsive bootstrap 4 admin template" name="description">
+    <meta content="Coderthemes" name="author">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- App favicon -->
+    <th:block th:replace="/shared/head :: head"/>
+
+
+</head>
+<body>
+<div id="wrapper">
+    <!-- Topbar Start -->
+    <th:block th:replace="/shared/navbar-custom :: navbar-custom" />
+    <!-- end Topbar -->
+    <!-- ========== Left Sidebar Start ========== -->
+    <th:block th:replace="/shared/left-side-menu :: left-side-menu" />
+    <!-- Left Sidebar End -->
+
+    <!-- ============================================================== -->
+    <!-- Start Page Content here -->
+    <!-- ============================================================== -->
+    <div class="content-page">
+        <div class="content">
+            <!-- Start Content-->
+            <div class="container-fluid">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <h3 class="page-title">
+                                <a class="btn btn-outline-primary" id="create-modal">
+                                    <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+                                    <span>Add New Customer</span>
+                                </a>
+                            </h3>
+                            <div class="page-title-right">
+                                <ol class="breadcrumb p-0 m-0">
+                                    <li class="breadcrumb-item"><a href="#">Velonic</a></li>
+                                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                                    <li class="breadcrumb-item active">List User</li>
+                                </ol>
+                            </div>
+
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="tbListUser">
+                            <thead style= "background-color: bisque;">
+                            <tr>
+                                <th>#</th>
+                                <th>Full Name</th>
+                                <th>User Name</th>
+                                <th>Mobile</th>
+                                <th>Role</th>
+                                <th>Province</th>
+                                <th>District</th>
+                                <th>Ward</th>
+                                <th>Address</th>
+                            </tr>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- end page title -->
+                </div>
+                <!-- end container-fluid -->
+            </div>
+            <!-- end content -->
+            <!-- Footer Start -->
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            2022 &copy; Velonic theme by <a href="">CodeGym</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+            <!-- end Footer -->
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End Page content -->
+        <!-- ============================================================== -->
+
+
+    </div>
+</div>
+
+<th:block th:replace="/user/temp_row_user :: temp_row_user"/>
+
+<th:block th:replace="/user/footer :: footer"/>
+
+<th:block th:replace="/user/modal_create :: modal_create"/>
+
+<th:block th:replace="/user/modal_update :: modal_update"/>
+
+
+
+<th:block th:replace="/shared/script :: script"/>
+
+<script>
+    let user = new User();
+    let userId = null;
+    let locationRegion = new LocationRegion();
+    let role = new Role();
+
+    let tempRowUser = $.validator.format($.trim($('#tempRowUser').val().toString()));
+
+    function addRowUser() {
+        $('#tbListUser tbody').prepend($(tempRowUser(user.id, user.fullName, user.username, user.phone,role.name, locationRegion.provinceName, locationRegion.districtName, locationRegion.wardName, locationRegion.address)));
+    }
+
+    function replaceRowUser() {
+        $('#tr_' + user.id).replaceWith($(tempRowUser(user.id, user.fullName, user.username, user.phone, role.name, locationRegion.provinceName, locationRegion.districtName, locationRegion.wardName, locationRegion.address)));
+    }
+
+    function handleShowCreateModal(){
+        $('#create-modal').on('click', () => {
+            $('#modalCreateUser').modal('show');
+        })
+    }
+
+    function drawProvinces(){
+        return $.ajax({
+            "headers": {
+                "accept": " application/json",
+                "content-type": "application/json"
+            },
+            "type": "GET",
+            "url": "https://vapi.vnappmob.com/api/province/"
+        })
+        .done((data) =>{
+            $.each(data.results, (i,item)=>{
+                let str = `<option value="${item.province_id}">${item.province_name}</option>`;
+                $('#province').prepend(str);
+                $('#provinceUp').prepend(str);
+            })
+        })
+        .fail((jqXHR)=>{
+            App.IziToast.showErrorAlert("Không thể tải danh sách tỉnh thành phố")
+        })
+
+    }
+
+    function drawDistricts(provinceId) {
+        return $.ajax({
+            "headers": {
+                "accept": "application/json",
+                "content-type": "application/json"
+            },
+            "type": "GET",
+            "url": "https://vapi.vnappmob.com/api/province/district/" + provinceId,
+        })
+        .done((data) => {
+            $('#district').html('');
+            $('#districtUp').html('');
+
+            if (data.results.length === 0) {
+                App.IziToast.showErrorAlert('Không thể tải danh sách Quận - Phường - Huyện');
+            }
+            else {
+                $.each(data.results, (i, item) => {
+                    let str = `<option value="${item.district_id}">${item.district_name}</option>`;
+
+                    $('#district').prepend(str);
+                    $('#districtUp').prepend(str);
+                })
+            }
+        });
+    }
+
+    function drawWards(districtId) {
+        return $.ajax({
+            "headers": {
+                "accept": "application/json",
+                "content-type": "application/json"
+            },
+            "type": "GET",
+            "url": "https://vapi.vnappmob.com/api/province/ward/" + districtId,
+        })
+        .done((data) => {
+            $('#ward').html('');
+            $('#wardUp').html('');
+
+            if (data.results.length === 0) {
+                App.IziToast.showErrorAlert('Không thể tải danh sách xã - thị trấn');
+            }
+            else {
+                $.each(data.results, (i, item) => {
+                    let str = `<option value="${item.ward_id}">${item.ward_name}</option>`;
+
+                    $('#ward').prepend(str);
+                    $('#wardUp').prepend(str);
+                })
+            }
+        });
+    }
+    drawProvinces().then(()=>{
+        let provinceId = $('#province').val();
+        drawDistricts(provinceId).then(()=>{
+            let districtId = $('#district').val();
+            drawWards(districtId);
+        })
+    });
+
+    function handleShowFooter() {
+        $("#tbListUser tbody tr").on('click', function () {
+
+            userId = $(this).attr('id').replace('tr_', '');
+
+            let tempFooter = $.validator.format($.trim($('#tempFooter').val().toString()));
+
+            $('.footer').html(tempFooter);
+
+            handleShowUpdate();
+
+        });
+    }
+
+    function unbindAll() {
+        $("#tbListUser tbody tr").off();
+    }
+
+
+
+
+    $(() => {
+        handleShowCreateModal();
+    })
+
+
+
+    $("#province").on('change', () => {
+        let provinceId = $('#province').val();
+
+        drawDistricts(provinceId).then(() => {
+            let districtId = $('#district').val();
+            drawWards(districtId);
+        });
+    });
+
+    $("#provinceUp").on('change', () => {
+        let provinceId = $('#provinceUp').val();
+
+        drawDistricts(provinceId).then(() => {
+            let districtId = $('#districtUp').val();
+            drawWards(districtId);
+        });
+    });
+
+    $("#district").on('change', () => {
+        let districtId = $('#district').val();
+        drawWards(districtId);
+    });
+
+    $("#districtUp").on('change', ()=>{
+        let districtId = $("#districtUp").val();
+        drawWards(districtId);
+    })
+
+    $("#btnCreateUser").on('click', () => {
+        locationRegion.provinceId = $("#province").val();
+        locationRegion.provinceName = $("#province :selected").text();
+        locationRegion.districtId = $("#district").val();
+        locationRegion.districtName = $("#district :selected").text();
+        locationRegion.wardId = $("#ward").val();
+        locationRegion.wardName = $("#ward :selected").text();
+        locationRegion.address = $("#address").val();
+
+        role.id = $("#role").val();
+        role.name = $("#role :selected").text();
+
+
+        user.fullName = $("#fullName").val();
+        user.username = $("#userName").val();
+        user.password = "123";
+        user.phone = $("#phone").val();
+        user.role = role;
+        user.locationRegion = locationRegion;
+
+        $.ajax({
+            "headers": {
+                "accept": "application/json",
+                "content-type": "application/json"
+            },
+            "type": "POST",
+            "url": "http://localhost:8080/api/users/create",
+            "data": JSON.stringify(user)
+        })
+        .done((data) => {
+            console.log(data);
+            user = data;
+            role = user.role;
+            locationRegion = user.locationRegion;
+
+            addRowUser();
+
+            $('#modalCreateUser').modal('hide');
+
+            App.SweetAlert.showSuccessAlert('Create customer success');
+
+            unbindAll();
+
+            handleShowFooter();
+        })
+        .fail((jqXHR) => {
+            $('#modalCreateUser .modal-alert-danger').html('').removeClass('hide').addClass('show');
+            console.log(jqXHR)
+            // if (jqXHR.responseJSON.message) {
+            //     let msg = jqXHR.responseJSON.message;
+            //
+            //     let str = `<label id="message-error" class="error" for="message">${msg}</label>`;
+            //
+            //     $('#modalCreateUser .modal-alert-danger').append(str);
+            // }
+            // else
+                if (jqXHR.responseJSON) {
+                $.each(jqXHR.responseJSON, (key, item) => {
+                    let str = `<label id="${key}-error" class="error" for="${key}">${item}</label>`;
+                    $("#" + key).addClass("error");
+
+                    $('#modalCreateUser .modal-alert-danger').append(str);
+                })
+            }
+        })
+    })
+
+    $('#btnUpdateUser').on('click', () => {
+        locationRegion.provinceId = $('#provinceUp').val();
+        locationRegion.provinceName = $('#provinceUp :selected').text();
+        locationRegion.districtId = $('#districtUp').val();
+        locationRegion.districtName = $('#districtUp :selected').text();
+        locationRegion.wardId = $('#wardUp').val();
+        locationRegion.wardName = $('#wardUp :selected').text();
+        locationRegion.address = $('#addressUp').val();
+
+        role.id = $("#role").val();
+        role.name = $("#role :selected").text();
+
+
+        user.fullName = $("#fullNameUp").val();
+        user.username = $("#userNameUp").val();
+        user.password = "123";
+        user.phone = $("#phoneUp").val();
+        user.role = role;
+        user.locationRegion = locationRegion;
+
+        $.ajax({
+            "headers": {
+                "accept": "application/json",
+                "content-type": "application/json"
+            },
+            "type": "PUT",
+            "url": "http://localhost:8080/api/users/update",
+            "data": JSON.stringify(user)
+        })
+            .done((data) => {
+                user = data;
+                role = user.role;
+                locationRegion = user.locationRegion;
+
+                replaceRowUser();
+
+                $('#modalUpdateUser').modal('hide');
+
+                App.SweetAlert.showSuccessAlert('Update customer success');
+
+                unbindAll();
+
+                handleShowFooter();
+
+            })
+            .fail((jqXHR) => {
+                $('#modalUpdateUser .modal-alert-danger').html('').removeClass('hide').addClass('show');
+
+                if (jqXHR.responseJSON.message) {
+                    let msg = jqXHR.responseJSON.message;
+
+                    let str = `<label id="message-error" class="error" for="message">${msg}</label>`;
+
+                    $('#modalUpdateUser .modal-alert-danger').append(str);
+                }
+                else if (jqXHR.responseJSON) {
+                    $.each(jqXHR.responseJSON, (key, item) => {
+                        let str = `<label id="${key}-error" class="error" for="${key}">${item}</label>`;
+                        $("#" + key).addClass("error");
+
+                        $('#modalUpdateUser .modal-alert-danger').append(str);
+                    })
+                }
+            })
+    });
+
+    function handleShowUpdate() {
+        $('button.edit').on('click', () => {
+
+            $.ajax({
+                headers: {
+                    "accept": "application/json",
+                    "content-type": "application/json"
+                },
+                type: "GET",
+                url: "http://localhost:8080/api/users/" + userId
+            })
+                .done((data) => {
+                    user = data;
+                    role = user.role
+                    locationRegion = user.locationRegion;
+
+                    role.id = $("#role").val();
+                    role.name = $("#role :selected").text();
+
+                    $('#fullNameUp').val(user.fullName);
+                    $('#userNameUp').val(user.username);
+
+                    $('#roleUp').val(role.id);
+                    $('#roleUp :selected').val(role.name);
+
+                    $('#phoneUp').val(user.phone);
+
+                    $('#provinceUp').val(locationRegion.provinceId);
+
+                    drawDistricts(locationRegion.provinceId).then(() => {
+                        $('#districtUp').val(locationRegion.districtId);
+
+                        drawWards(locationRegion.districtId).then(() => {
+                            $('#wardUp').val(locationRegion.wardId);
+                        });
+                    });
+
+                    $('#addressUp').val(locationRegion.address);
+
+                    $('#modalUpdateUser').modal('show');
+                })
+                .fail((jqXHR) => {
+                    App.SweetAlert.showErrorAlert(jqXHR.responseJSON.message);
+                    console.log(jqXHR);
+                })
+        });
+    }
+
+    function getAllUser() {
+        $.ajax({
+            "headers": {
+                "accept": "application/json",
+                "content-type": "application/json"
+            },
+            "type": "GET",
+            "url": "http://localhost:8080/api/users"
+        })
+            .done((data) => {
+                $('#tbListCustomers tbody').html('');
+
+                $.each(data, (i, item) => {
+                    user = item;
+                    role = user.role;
+                    locationRegion = user.locationRegion;
+
+                    addRowUser();
+                });
+
+                handleShowFooter();
+            })
+            .fail((jqXHR) => {
+                console.log(jqXHR);
+            })
+    }
+    getAllUser();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Responsive Loginform</title>
+    <link rel="stylesheet" href="/assets/css/login.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,300">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/assets/css/iziToast-1.4.0.min.css">
+    <link rel="stylesheet" href="/assets/css/sweetalert2.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+
+</head>
+<body>
+<!-- LOGIN MODULE -->
+<div class="login">
+    <div class="wrap">
+
+
+
+
+        <!-- LOGIN FORM -->
+        <div class="user">
+            <div class="form-wrap">
+                <!-- TABS -->
+                <div class="tabs">
+                    <h3 class="login-tab">
+                        <a class="log-in active" href="#login-tab-content"><span>Login</span></a>
+                    </h3>
+
+                </div>
+                <!-- TABS CONTENT -->
+                <div class="tabs-content">
+                    <!-- TABS CONTENT LOGIN -->
+                    <div id="login-tab-content" class="active">
+                        <form class="login-form" method="post">
+                            <input type="text" class="input" id="user_login" autocomplete="off" placeholder="Email or Username">
+                            <input type="password" class="input" id="user_password"  autocomplete="off" placeholder="Password">
+                            <input type="checkbox" class="checkbox" checked id="remember_me">
+                            <label for="remember_me">Remember me</label>
+                            <input type="button" class="button" id="btn_login" value="Login">
+                        </form>
+                        <div class="help-action">
+                            <p><i class="fa fa-arrow-left" aria-hidden="true"></i><a class="forgot" href="#">Forgot your password?</a></p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
+
+
+<th:block th:replace="/shared/script :: script"></th:block>
+
+<script src="/assets/js/login.js"></script>
+<!--<script src="/assets/js/jquery-3.6.0.min.js"></script>-->
+<!--<script src="/assets/js/iziToast-1.4.0.js"></script>-->
+<!--<script src="/assets/js/app.model.js"></script>-->
+<!--<script src="/assets/js/sweetalert2.min.js"></script>-->
+
+<script>
+
+    let page = {
+        url: {
+            doLogin : App.BASER_URL + "auth/" + "login"
+        },
+        elements : {
+            locationRegion : {}
+        },
+        loadData : {},
+        command : {},
+        dialogs : {
+            elements: {},
+            command : {}
+        },
+        initializeControllEvents : {}
+    }
+
+    let user = new User();
+
+    page.elements.email = $("#user_login")
+    page.elements.password = $("#user_password")
+    page.elements.btnLogin = $("#btn_login")
+
+    page.elements.btnLogin.on("click", () => {
+        page.command.doLogin();
+    })
+
+    page.command.doLogin = () => {
+        user.username = page.elements.email.val();
+        user.password = page.elements.password.val();
+
+        $.ajax({
+            "headers" : {
+                "accept" : "application/json",
+                "content-type": "application/json"
+            },
+            'type' : "POST",
+            "url" : page.url.doLogin,
+            "data" : JSON.stringify(user)
+        })
+        .done((data) => {
+            console.log(data)
+            App.SweetAlert.showSuccessAlert("Login success");
+            setTimeout(function () {
+                window.location.href= "/home";
+            }, 1000);
+        })
+        .fail((jqXHR) => {
+            console.log(jqXHR);
+            App.IziToast.showErrorAlert("Thông Tin Đăng Nhập Không Chính Xác");
+        })
+    }
+
+
+</script>
+
+</body>
+</html>
