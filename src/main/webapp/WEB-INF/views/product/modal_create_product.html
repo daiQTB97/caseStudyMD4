@@ -1,0 +1,60 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<th:block th:fragment="modal_create_product">
+    <div id="modalCreateProduct" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Customer information</h5>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-alert-danger hide">
+
+
+                    </div>
+
+                    <form id="frmCreateProduct" method="post">
+                        <fieldset class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Title</label>
+                                <input type="text" class="form-control" id="fullName" name="fullName">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Price</label>
+                                <input type="email" class="form-control" id="userName" name="userName">
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">Quantity</label>
+                                <input type="tel" class="form-control" id="phone" name="phone">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Status</label>
+                                <input type="password" class="form-control" id="password" name="password">
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">Category</label>
+                                <select class="form-control" id="role" name="role">
+                                    <option value="1">Điện thoại</option>
+                                    <option value="2">Laptop</option>
+                                    <option value="2">Phụ kiện</option>
+                                </select>
+                            </div>
+
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id="btnCreateProduct" class="btn btn-outline-primary">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                        Create Product
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</th:block>

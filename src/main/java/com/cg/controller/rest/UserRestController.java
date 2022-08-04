@@ -51,6 +51,7 @@ public class UserRestController {
     @PostMapping("/create")
     public ResponseEntity<?> doCreate(@Validated @RequestBody UserDTO userDTO, BindingResult bindingResult) {
 
+        new UserDTO().validate(userDTO, bindingResult);
         if (bindingResult.hasErrors()) {
             return appUtil.mapErrorToResponse(bindingResult);
         }
@@ -70,7 +71,7 @@ public class UserRestController {
     }
 
     @PutMapping("/update")
-//    @PreAuthorize("ADMIN")
+    @PreAuthorize("ADMIN")
     public ResponseEntity<?> doUpdate(@Validated @RequestBody UserDTO userDTO, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -94,5 +95,26 @@ public class UserRestController {
         User updatedUser = userService.save(userDTO.toUser());
 
         return new ResponseEntity<>(updatedUser.toUserDTO(), HttpStatus.ACCEPTED);
+    }
+
+    @DeleteMapping("/delete/{id}")
+//    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<?> doDelete(@PathVariable Long id) {
+        System.out.println("delete method");
+        Optional<UserDTO> user = userService.findUserDTOById(id);
+
+        if (user.isPresent()) {
+            try {
+                user.get().setDeleted(true);
+                userService.save(user.get().toUser());
+
+                return new ResponseEntity<>(HttpStatus.ACCEPTED);
+
+            } catch (DataInputException e) {
+                throw new DataInputException("Invalid suspension information");
+            }
+        } else {
+            throw new DataInputException("Invalid apartment information");
+        }
     }
 }

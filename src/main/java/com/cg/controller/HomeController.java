@@ -3,7 +3,6 @@ package com.cg.controller;
 import com.cg.model.dto.UserDTO;
 import com.cg.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -51,17 +50,15 @@ public class HomeController {
 
     @GetMapping("login")
     public String showLoginPage(){
-        System.out.println("Show login cho tui ");
-//        UserDTO userDTO = getUserDTO();
-//        if(userDTO != null){
-//            return "redirect:/home";
-//        }
+
         return "/login";
     }
-//    @GetMapping("register")
-//    public ModelAndView showRegisterPage() {
-//        ModelAndView modelAndView = new ModelAndView();
-//        modelAndView.setViewName("/register");
-//        return modelAndView;
-//    }
+
+
+    @GetMapping("/product")
+    public ModelAndView showProductPage() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/product/list_Product");
+        return modelAndView;
+    }
 }

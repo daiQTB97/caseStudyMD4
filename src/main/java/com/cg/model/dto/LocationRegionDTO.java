@@ -25,7 +25,7 @@ public class LocationRegionDTO {
     private String wardId;
     private String wardName;
 
-    @NotBlank(message = "Address is not blank")
+    @NotBlank(message = "Address không được để trống")
     private String address;
 
     public LocationRegion toLocationRegion() {

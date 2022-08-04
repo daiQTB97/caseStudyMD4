@@ -24,7 +24,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "u.role, " +
             "u.locationRegion " +
             ") " +
-            "FROM User AS u"
+            "FROM User AS u WHERE u.deleted = false"
     )
     List<UserDTO> findAllUserDTO();
 

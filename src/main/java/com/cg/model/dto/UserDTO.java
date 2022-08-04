@@ -26,7 +26,7 @@ public class UserDTO implements Validator {
 
     private String id;
 
-    @NotBlank(message = "Full Name is not blank")
+//    @NotBlank(message = "Tên đầy đủ không được để trống, vd: Tran Ba Quoc Dai")
     private String fullName;
 
     @Column(unique = true, nullable = false)
@@ -46,6 +46,8 @@ public class UserDTO implements Validator {
 
     @Valid
     private LocationRegionDTO locationRegion;
+
+    private boolean deleted;
 
     public UserDTO(Long id, String password, String username) {
         this.id = id.toString();
@@ -75,6 +77,17 @@ public class UserDTO implements Validator {
         this.locationRegion = locationRegion.toLocationRegionDTO();
     }
 
+    public UserDTO(Long id, String fullName, String username, String password, String phone, Role role, LocationRegion locationRegion, boolean delete) {
+        this.id = id.toString();
+        this.fullName = fullName;
+        this.username = username;
+        this.password = password;
+        this.phone = phone;
+        this.role = role.toRoleDTO();
+        this.locationRegion = locationRegion.toLocationRegionDTO();
+        this.deleted = deleted;
+    }
+
     public User toUser() {
         return new User()
                 .setId(Long.parseLong(id))
@@ -83,7 +96,8 @@ public class UserDTO implements Validator {
                 .setPassword(password)
                 .setPhone(phone)
                 .setRole(role.toRole())
-                .setLocationRegion(locationRegion.toLocationRegion());
+                .setLocationRegion(locationRegion.toLocationRegion())
+                .setDeleted(deleted);
     }
 
     @Override
@@ -96,17 +110,17 @@ public class UserDTO implements Validator {
         UserDTO userDTO = (UserDTO) target;
 
         String fullNameCheck = userDTO.getFullName();
-        String emailCheck = userDTO.getUsername();
+        String usernameCheck = userDTO.getUsername();
         String passwordCheck = userDTO.getPassword();
         String phoneCheck = userDTO.getPhone();
 
-        if ((emailCheck.trim()).isEmpty()) {
-            errors.rejectValue("email", "email.isEmpty", "Vui Lòng Nhập Email Người Dùng");
+        if ((fullNameCheck.trim().isEmpty())){
+            errors.rejectValue("fullName", "fullName.isEmpty", "Tên đầy đủ không được để trống, vd: Tran Ba Quoc Dai");
             return;
         }
 
-        if ((fullNameCheck.trim().isEmpty())){
-            errors.rejectValue("fullName", "fullName.isEmpty", "Vui Lòng Nhập Tên Người Dùng");
+        if ((usernameCheck.trim()).isEmpty()) {
+            errors.rejectValue("username", "username.isEmpty", "Vui Lòng Nhập Email Người Dùng");
             return;
         }
 
@@ -125,8 +139,8 @@ public class UserDTO implements Validator {
             return;
         }
 
-        if ((emailCheck.length() > 255)) {
-            errors.rejectValue("email", "fullName.length", "Email Tối Đa 255 Ký Tự");
+        if ((usernameCheck.length() > 255)) {
+            errors.rejectValue("username", "fullName.length", "Email Tối Đa 255 Ký Tự");
             return;
         }
 
@@ -135,20 +149,16 @@ public class UserDTO implements Validator {
             return;
         }
 
-        if (!emailCheck.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,3}$")) {
-            errors.rejectValue("email", "email.matches", "Email Nhập Vào Không Hợp Lệ");
+        if (!usernameCheck.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,3}$")) {
+            errors.rejectValue("username", "username.matches", "Email Nhập Vào Không Hợp Lệ");
             return;
         }
 
-        if (!passwordCheck.matches("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^*])(?!.*['\"`]).{6,}")) {
-            errors.rejectValue("password", "password.matches", "Mật Khẩu Nhập Vào Không Hợp Lệ");
-            return;
-        }
+//        if (!passwordCheck.matches("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^*])(?!.*['\"`]).{6,}")) {
+//            errors.rejectValue("password", "password.matches", "Mật Khẩu Nhập Vào Không Hợp Lệ");
+//            return;
+//        }
 
-        if (!phoneCheck.matches("^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$")){
-            errors.rejectValue("phone", "phone.matches", "Số Điện Thoại Nhập Vào Không Hợp Lệ");
-            return;
-        }
 
     }
 }

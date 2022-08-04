@@ -3,6 +3,10 @@ class App {
 
     static BASER_URL = this.DOMAIN + "/api/";
 
+    static BASE_URL_USER = this.DOMAIN + "/api/users";
+
+    static BASE_URL_NEW_USER = this.DOMAIN + "/api/users/create";
+
     static SweetAlert = class {
         static showSuccessAlert(t) {
             Swal.fire({
@@ -19,6 +23,17 @@ class App {
                 icon: 'error',
                 title: 'Warning',
                 text: t,
+            })
+        }
+
+        static showConfirmDelete() {
+            return Swal.fire({
+                title: 'Are you sure to delete this property?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
             })
         }
     }

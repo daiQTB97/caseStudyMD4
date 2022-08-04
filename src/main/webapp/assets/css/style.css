@@ -78,3 +78,13 @@ input.error {
     border-radius: 0.25rem;
     opacity: .5;
 }
+
+.footer {
+    bottom: 0;
+    padding: 21px 15px 20px;
+    position: absolute;
+    right: 0;
+    color: #6c757d;
+    background-color: #e7ebeb;
+    text-align: right;
+}

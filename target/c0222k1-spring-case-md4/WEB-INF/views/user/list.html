@@ -111,6 +111,19 @@
 <th:block th:replace="/shared/script :: script"/>
 
 <script>
+
+    let page = {
+        urls: {
+            getAllUser : App.BASE_URL_USER,
+            createUser : App.BASE_URL_NEW_USER,
+            updateUser: App.BASE_URL_USER + "/update",
+            deleteUser: App.BASE_URL_USER + "/delete",
+            search: App.BASE_URL_USER + "/search"
+        },
+        element: {},
+        commands: {},
+    }
+
     let user = new User();
     let userId = null;
     let locationRegion = new LocationRegion();
@@ -225,6 +238,8 @@
             $('.footer').html(tempFooter);
 
             handleShowUpdate();
+            handleShowDelete();
+
 
         });
     }
@@ -234,13 +249,9 @@
     }
 
 
-
-
     $(() => {
         handleShowCreateModal();
     })
-
-
 
     $("#province").on('change', () => {
         let provinceId = $('#province').val();
@@ -285,7 +296,7 @@
 
         user.fullName = $("#fullName").val();
         user.username = $("#userName").val();
-        user.password = "123";
+        user.password = $("#password").val();
         user.phone = $("#phone").val();
         user.role = role;
         user.locationRegion = locationRegion;
@@ -314,18 +325,19 @@
             unbindAll();
 
             handleShowFooter();
+            handleShowDelete()
         })
         .fail((jqXHR) => {
-            $('#modalCreateUser .modal-alert-danger').html('').removeClass('hide').addClass('show');
+            $(' .modal-alert-danger').html('').removeClass('hide').addClass('show');
             console.log(jqXHR)
-            // if (jqXHR.responseJSON.message) {
-            //     let msg = jqXHR.responseJSON.message;
-            //
-            //     let str = `<label id="message-error" class="error" for="message">${msg}</label>`;
-            //
-            //     $('#modalCreateUser .modal-alert-danger').append(str);
-            // }
-            // else
+            if (jqXHR.responseJSON.message) {
+                let msg = jqXHR.responseJSON.message;
+
+                let str = `<label id="message-error" class="error" for="message">${msg}</label>`;
+
+                $('#modalCreateUser .modal-alert-danger').append(str);
+            }
+            else
                 if (jqXHR.responseJSON) {
                 $.each(jqXHR.responseJSON, (key, item) => {
                     let str = `<label id="${key}-error" class="error" for="${key}">${item}</label>`;
@@ -380,6 +392,7 @@
                 unbindAll();
 
                 handleShowFooter();
+                handleShowDelete()
 
             })
             .fail((jqXHR) => {
@@ -451,6 +464,36 @@
         });
     }
 
+    function handleShowDelete(){
+        $("button.suspended").on('click', () => {
+            console.log(userId)
+
+            App.SweetAlert.showConfirmDelete()
+            .then((result) => {
+                console.log(result)
+                if (result.value) {
+
+                    $.ajax({
+                        "type": "DELETE",
+                        "headers": {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        "url": page.urls.deleteUser + "/" + userId
+
+                    }).done( (data) => {
+                        console.log(data)
+                        App.SweetAlert.showSuccessAlert("Suspended failed success");
+                        $("#tr_" + userId).remove();
+
+                    }).fail( () => {
+                        App.SweetAlert.showErrorAlert("Suspended failed");
+                    });
+                }
+            })
+        })
+    }
+
     function getAllUser() {
         $.ajax({
             "headers": {
@@ -460,22 +503,22 @@
             "type": "GET",
             "url": "http://localhost:8080/api/users"
         })
-            .done((data) => {
-                $('#tbListCustomers tbody').html('');
+        .done((data) => {
+            $('#tbListCustomers tbody').html('');
 
-                $.each(data, (i, item) => {
-                    user = item;
-                    role = user.role;
-                    locationRegion = user.locationRegion;
+            $.each(data, (i, item) => {
+                user = item;
+                role = user.role;
+                locationRegion = user.locationRegion;
 
-                    addRowUser();
-                });
+                addRowUser();
+            });
 
-                handleShowFooter();
-            })
-            .fail((jqXHR) => {
-                console.log(jqXHR);
-            })
+            handleShowFooter();
+        })
+        .fail((jqXHR) => {
+            console.log(jqXHR);
+        })
     }
     getAllUser();
 

@@ -1,6 +1,7 @@
 package com.cg.model;
 
 import com.cg.model.dto.UserDTO;
+import com.mysql.cj.protocol.ColumnDefinition;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -42,6 +43,9 @@ public class User {
 
     private String updatedAt;
 
+    @Column(columnDefinition = " boolean default false")
+    private boolean deleted;
+
     public UserDTO toUserDTO(){
         return new UserDTO()
                 .setId(id.toString())
@@ -50,6 +54,7 @@ public class User {
                 .setPassword(password)
                 .setPhone(phone)
                 .setRole(role.toRoleDTO())
-                .setLocationRegion(locationRegion.toLocationRegionDTO());
+                .setLocationRegion(locationRegion.toLocationRegionDTO())
+                .setDeleted(deleted);
     }
 }
