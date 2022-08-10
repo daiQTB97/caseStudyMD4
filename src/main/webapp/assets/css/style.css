@@ -87,4 +87,5 @@ input.error {
     color: #6c757d;
     background-color: #e7ebeb;
     text-align: right;
+    position: fixed;
 }

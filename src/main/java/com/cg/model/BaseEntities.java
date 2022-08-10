@@ -33,7 +33,5 @@ public abstract class BaseEntities {
     @Column(name = "updated_by")
     private String updatedBy;
 
-    @Column(columnDefinition = "boolean default false")
-    private boolean deleted;
 
 }

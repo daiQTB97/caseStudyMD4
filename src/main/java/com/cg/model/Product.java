@@ -1,5 +1,6 @@
 package com.cg.model;
 
+import com.cg.model.dto.ProductDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,16 +17,17 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "products")
 @Accessors(chain = true)
-public class Product {
+public class Product extends BaseEntities{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(nullable = false)
     private String title;
 
-    private String urlImage;
+    @Column(name ="images")
+    private String image;
 
     @Column(nullable = false)
 
@@ -34,13 +36,20 @@ public class Product {
     @Column(nullable = false)
     private int quantity;
 
-    private String created_at;
-
-    private String updated_at;
-
-    private int stopSelling;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    @Column(columnDefinition = " boolean default false")
+    private boolean deleted;
+
+    public ProductDTO toProductDTO() {
+        return new ProductDTO().setId(id)
+                .setTitle(title)
+                .setQuantity(String.valueOf(quantity))
+                .setPrice(price.toString())
+                .setImage(image).setCategory(category.toCategoryDTO())
+                .setDeleted(deleted);
+    }
 }

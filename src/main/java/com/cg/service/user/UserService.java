@@ -29,4 +29,6 @@ public interface UserService extends IGeneralService<User>, UserDetailsService {
     Boolean existsByEmail(String email);
 
     Boolean existsByEmailAndIdIsNot(String email, Long id);
+
+    User saveNoPassword(User user);
 }

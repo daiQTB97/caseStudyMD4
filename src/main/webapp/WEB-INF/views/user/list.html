@@ -77,16 +77,11 @@
             </div>
             <!-- end content -->
             <!-- Footer Start -->
-            <footer class="footer">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-12">
-                            2022 &copy; Velonic theme by <a href="">CodeGym</a>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+
             <!-- end Footer -->
+
+
+            <div class="footer"></div>
 
         </div>
 
@@ -239,8 +234,6 @@
 
             handleShowUpdate();
             handleShowDelete();
-
-
         });
     }
 
@@ -271,6 +264,7 @@
         });
     });
 
+
     $("#district").on('change', () => {
         let districtId = $('#district').val();
         drawWards(districtId);
@@ -292,7 +286,6 @@
 
         role.id = $("#role").val();
         role.name = $("#role :selected").text();
-
 
         user.fullName = $("#fullName").val();
         user.username = $("#userName").val();
@@ -361,10 +354,10 @@
         role.id = $("#role").val();
         role.name = $("#role :selected").text();
 
-
+        user.id = $("#id_userUp").val();
         user.fullName = $("#fullNameUp").val();
         user.username = $("#userNameUp").val();
-        user.password = "123";
+        user.password = $("#passwordUp").val();
         user.phone = $("#phoneUp").val();
         user.role = role;
         user.locationRegion = locationRegion;
@@ -378,41 +371,60 @@
             "url": "http://localhost:8080/api/users/update",
             "data": JSON.stringify(user)
         })
-            .done((data) => {
-                user = data;
-                role = user.role;
-                locationRegion = user.locationRegion;
+        .done((data) => {
+            user = data;
+            role = user.role;
+            locationRegion = user.locationRegion;
 
-                replaceRowUser();
+            replaceRowUser();
 
-                $('#modalUpdateUser').modal('hide');
+            $('#modalUpdateUser').modal('hide');
 
-                App.SweetAlert.showSuccessAlert('Update customer success');
+            App.SweetAlert.showSuccessAlert('Update customer success');
 
-                unbindAll();
+            unbindAll();
+            handleShowFooter();
 
-                handleShowFooter();
-                handleShowDelete()
-
-            })
+        })
             .fail((jqXHR) => {
+                console.log(jqXHR);
                 $('#modalUpdateUser .modal-alert-danger').html('').removeClass('hide').addClass('show');
 
-                if (jqXHR.responseJSON.message) {
-                    let msg = jqXHR.responseJSON.message;
+                if (jqXHR.status === 401) {
+                    let msg = "Please login !!";
 
                     let str = `<label id="message-error" class="error" for="message">${msg}</label>`;
 
                     $('#modalUpdateUser .modal-alert-danger').append(str);
                 }
-                else if (jqXHR.responseJSON) {
-                    $.each(jqXHR.responseJSON, (key, item) => {
-                        let str = `<label id="${key}-error" class="error" for="${key}">${item}</label>`;
-                        $("#" + key).addClass("error");
+                else {
+                    if (jqXHR.status === 403) {
+                        let msg = "Bạn không được admin cấp quyền này!!";
+
+                        let str = `<label id="message-error" class="error" for="message">${msg}</label>`;
 
                         $('#modalUpdateUser .modal-alert-danger').append(str);
-                    })
+                    }
+                    else {
+                        if (jqXHR.responseJSON.message) {
+                            let msg = jqXHR.responseJSON.message;
+
+                            let str = `<label id="message-error" class="error" for="message">${msg}</label>`;
+
+                            $('#modalUpdateUser .modal-alert-danger').append(str);
+                        }
+                        else if (jqXHR.responseJSON) {
+                            $.each(jqXHR.responseJSON, (key, item) => {
+                                let str = `<label id="${key}-error" class="error" for="${key}">${item}</label>`;
+                                $("#" + key).addClass("error");
+
+                                $('#modalUpdateUser .modal-alert-danger').append(str);
+                            })
+                        }
+                    }
                 }
+
+
             })
     });
 
@@ -427,40 +439,42 @@
                 type: "GET",
                 url: "http://localhost:8080/api/users/" + userId
             })
-                .done((data) => {
-                    user = data;
-                    role = user.role
-                    locationRegion = user.locationRegion;
+            .done((data) => {
+                user = data;
+                console.log(user)
+                role = user.role
+                locationRegion = user.locationRegion;
 
-                    role.id = $("#role").val();
-                    role.name = $("#role :selected").text();
+                role.id = $("#role").val();
+                role.name = $("#role :selected").text();
 
-                    $('#fullNameUp').val(user.fullName);
-                    $('#userNameUp').val(user.username);
+                $('#fullNameUp').val(user.fullName);
+                $('#userNameUp').val(user.username);
+                $('#passwordUp').val(user.password);
 
-                    $('#roleUp').val(role.id);
-                    $('#roleUp :selected').val(role.name);
+                $('#roleUp').val(role.id);
+                $('#roleUp :selected').val(role.name);
+                $("#id_userUp").val(user.id)
+                $('#phoneUp').val(user.phone);
 
-                    $('#phoneUp').val(user.phone);
+                $('#provinceUp').val(locationRegion.provinceId);
 
-                    $('#provinceUp').val(locationRegion.provinceId);
+                drawDistricts(locationRegion.provinceId).then(() => {
+                    $('#districtUp').val(locationRegion.districtId);
 
-                    drawDistricts(locationRegion.provinceId).then(() => {
-                        $('#districtUp').val(locationRegion.districtId);
-
-                        drawWards(locationRegion.districtId).then(() => {
-                            $('#wardUp').val(locationRegion.wardId);
-                        });
+                    drawWards(locationRegion.districtId).then(() => {
+                        $('#wardUp').val(locationRegion.wardId);
                     });
+                });
 
-                    $('#addressUp').val(locationRegion.address);
+                $('#addressUp').val(locationRegion.address);
 
-                    $('#modalUpdateUser').modal('show');
-                })
-                .fail((jqXHR) => {
-                    App.SweetAlert.showErrorAlert(jqXHR.responseJSON.message);
-                    console.log(jqXHR);
-                })
+                $('#modalUpdateUser').modal('show');
+            })
+            .fail((jqXHR) => {
+                App.SweetAlert.showErrorAlert(jqXHR.responseJSON.message);
+                console.log(jqXHR);
+            })
         });
     }
 

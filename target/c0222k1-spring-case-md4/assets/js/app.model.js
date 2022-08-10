@@ -5,6 +5,10 @@ class App {
 
     static BASE_URL_USER = this.DOMAIN + "/api/users";
 
+    static BASE_URL_CATEGORY = this.DOMAIN + "/api/categoryRest";
+
+    static BASE_URL_PRODUCT = this.DOMAIN + "/api/products";
+
     static BASE_URL_NEW_USER = this.DOMAIN + "/api/users/create";
 
     static SweetAlert = class {
@@ -98,6 +102,27 @@ class User {
         this.phone = phone;
         this.role = role;
         this.locationRegion = locationRegion;
+    }
+}
+
+class Category{
+    constructor(id, title,code) {
+        this.id = id;
+        this.title = title;
+        this.code = code;
+    }
+}
+
+class Product{
+    constructor(id, title, category, quantity, price, image, deleted){
+        this.id = id;
+        this.title = title;
+        this.category = category;
+        this.quantity = quantity;
+        this.price = price;
+        this.image = image;
+        this.deleted = deleted;
+
     }
 }
 

@@ -61,19 +61,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.httpBasic().authenticationEntryPoint(restServicesEntryPoint());
 
         http.authorizeRequests()
-                .antMatchers("/", "/api/auth/login", "/api/auth/register", "/login","/**").permitAll()
-                .antMatchers("/transfers").hasAnyAuthority("ADMIN")
+                .antMatchers("/api/auth/login", "/api/auth/register", "/login").permitAll()
+                .antMatchers("/api/users/update","/api/products/update/{id}").hasAnyAuthority("ADMIN")
                 .antMatchers("/assets/**").permitAll()
-                .antMatchers(
-                        "/v2/api-docs",
-                        "/swagger-resources/configuration/ui",
-                        "/configuration/ui",
-                        "/swagger-resources",
-                        "/swagger-resources/configuration/security",
-                        "/configuration/security",
-                        "/swagger-ui.html",
-                        "/webjars/**"
-                ).permitAll()
+//                .antMatchers(
+//                        "/v2/api-docs",
+//                        "/swagger-resources/configuration/ui",
+//                        "/configuration/ui",
+//                        "/swagger-resources",
+//                        "/swagger-resources/configuration/security",
+//                        "/configuration/security",
+//                        "/swagger-ui.html",
+//                        "/webjars/**"
+//                ).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

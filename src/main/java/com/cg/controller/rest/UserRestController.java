@@ -71,8 +71,9 @@ public class UserRestController {
     }
 
     @PutMapping("/update")
-    @PreAuthorize("ADMIN")
+//    @PreAuthorize("ADMIN")
     public ResponseEntity<?> doUpdate(@Validated @RequestBody UserDTO userDTO, BindingResult bindingResult) {
+
 
         if (bindingResult.hasErrors()) {
             return appUtil.mapErrorToResponse(bindingResult);
@@ -92,7 +93,7 @@ public class UserRestController {
 
         userDTO.getLocationRegion().setId(0L);
 
-        User updatedUser = userService.save(userDTO.toUser());
+        User updatedUser = userService.saveNoPassword(userDTO.toUser());
 
         return new ResponseEntity<>(updatedUser.toUserDTO(), HttpStatus.ACCEPTED);
     }
@@ -107,7 +108,6 @@ public class UserRestController {
             try {
                 user.get().setDeleted(true);
                 userService.save(user.get().toUser());
-
                 return new ResponseEntity<>(HttpStatus.ACCEPTED);
 
             } catch (DataInputException e) {

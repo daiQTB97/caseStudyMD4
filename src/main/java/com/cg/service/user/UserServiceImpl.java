@@ -103,6 +103,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User saveNoPassword(User user) {
+        LocationRegion locationRegion = locationRegionRepository.save(user.getLocationRegion());
+        user.setLocationRegion(locationRegion);
+        return userRepository.save(user);
+    }
+
+    @Override
     public void remove(Long id) {
         userRepository.deleteById(id);
     }

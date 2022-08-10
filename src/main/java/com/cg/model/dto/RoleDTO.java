@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 @Accessors(chain = true)
 public class RoleDTO implements Validator {
 
-    @NotNull(message = "The role is required")
+    @NotNull(message = "id phải chắc chắn là có tồn tại")
     private String id;
 
     private String code;

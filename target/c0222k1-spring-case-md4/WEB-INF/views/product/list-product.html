@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="en">
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Dashboard Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Responsive bootstrap 4 admin template" name="description">
+    <meta content="Coderthemes" name="author">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- App favicon -->
+    <th:block th:replace="/shared/head :: head"/>
+
+</head>
+<body>
+<div id="wrapper">
+    <!-- Topbar Start -->
+    <th:block th:replace="/shared/navbar-custom :: navbar-custom" />
+    <!-- end Topbar -->
+    <!-- ========== Left Sidebar Start ========== -->
+    <th:block th:replace="/shared/left-side-menu :: left-side-menu" />
+    <!-- Left Sidebar End -->
+
+    <!-- ============================================================== -->
+    <!-- Start Page Content here -->
+    <!-- ============================================================== -->
+    <div class="content-page">
+        <div class="content">
+            <!-- Start Content-->
+            <div class="container-fluid">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row mt-3">
+                            <div class="col-lg-2">
+                                <h4 class="card-title mb-4">List of properties</h4>
+                            </div>
+                            <div class="col-lg-2">
+                                <button type="button" id="create-modal" class="btn btn-primary btn-sm btn-rounded waves-effect waves-light" data-toggle="modal" data-target="#createAptModal">
+                                    Add new Product
+                                </button>
+                            </div>
+                            <div class="col-lg-4">
+                            </div>
+
+                            <div class="col-lg-3">
+                                <form class="app-search d-none d-lg-block">
+                                    <div class="position-relative" id="div-search">
+                                        <input type="text" class="form-control" id="input-search" placeholder="Search...">
+                                        <span class="bx bx-search-alt"></span>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="col-lg-1">
+                                <button type="button" id="btn-search" class="btn btn-warning btn-sm btn-rounded waves-effect waves-light">
+                                    Search
+                                </button>
+                            </div>
+
+
+                        </div>
+<!--                        <div class="page-title-box">-->
+<!--                            <h3 class="page-title">-->
+<!--                                <a class="btn btn-outline-primary" id="create-modal">-->
+<!--                                    <i class="fa fa-plus-square-o" aria-hidden="true"></i>-->
+<!--                                    <span>Add New Product</span>-->
+<!--                                </a>-->
+<!--                            </h3>-->
+
+<!--                            <div class="col-lg-3">-->
+<!--                                <form class="app-search d-none d-lg-block">-->
+<!--                                    <div class="position-relative" id="div-search">-->
+<!--                                        <input type="text" class="form-control" id="input-search" placeholder="Search...">-->
+<!--                                        <span class="bx bx-search-alt"></span>-->
+<!--                                    </div>-->
+<!--                                </form>-->
+<!--                            </div>-->
+
+<!--                            <div class="col-lg-1">-->
+<!--                                <button type="button" id="btn-search" class="btn btn-warning btn-sm btn-rounded waves-effect waves-light">-->
+<!--                                    Search-->
+<!--                                </button>-->
+<!--                            </div>-->
+<!--                            <div class="page-title-right">-->
+<!--                                <ol class="breadcrumb p-0 m-0">-->
+<!--                                    <li class="breadcrumb-item"><a href="#">Velonic</a></li>-->
+<!--                                    <li class="breadcrumb-item"><a href="#">Quốc Đại</a></li>-->
+<!--                                    <li class="breadcrumb-item active">List Product</li>-->
+<!--                                </ol>-->
+<!--                            </div>-->
+
+<!--                            <div class="clearfix"></div>-->
+<!--                        </div>-->
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="tbListProduct">
+                            <thead style= "background-color: bisque;">
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th class="text-center">Product Name</th>
+                                    <th class="text-center">Image</th>
+                                    <th class="text-center">Amount</th>
+                                    <th class="text-center">Prince</th>
+                                    <th class="text-center">Category</th>
+                                </tr>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- end page title -->
+                </div>
+                <!-- end container-fluid -->
+            </div>
+            <!-- end content -->
+            <!-- Footer Start -->
+
+            <!-- end Footer -->
+
+
+            <div class="footer"></div>
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End Page content -->
+        <!-- ============================================================== -->
+
+
+    </div>
+</div>
+
+<th:block th:replace="/product/modal_create_product :: modal_create_product"/>
+
+<th:block th:replace="/product/modal_update_product :: modal_update_product"/>
+
+<th:block th:replace="/product/temp_row_product :: temp_row_product"/>
+
+<th:block th:replace="/product/footer :: footer"/>
+
+<th:block th:replace="/shared/script :: script"/>
+
+<script>
+
+    let category = new Category();
+    let product = new Product();
+    let productId = null;
+
+    let page = {
+        urls: {
+            search: App.BASE_URL_PRODUCT + "/search"
+
+        },
+        element: {},
+        commands: {},
+    }
+
+    let tempRowProduct = $.validator.format($.trim($('#tempRowProduct').val().toString()));
+
+    function addRowProduct() {
+        $('#tbListProduct tbody').prepend($(tempRowProduct(product.id, product.title, product.image, product.quantity,product.price, category.title)));
+    }
+
+    function replaceRowProduct() {
+        $('#tr_' + product.id).replaceWith($(tempRowProduct(product.id, product.title, product.image, product.quantity,product.price, category.title)));
+    }
+
+
+
+
+    function handleShowFooterProduct() {
+        $("#tbListProduct tbody tr").on('click', function () {
+
+            productId = $(this).attr('id').replace('tr_', '');
+
+            let tempFooter = $.validator.format($.trim($('#tempProductFooter').val().toString()));
+
+            $('.footer').html(tempFooter);
+
+            handleShowUpdateProduct();
+            handleshowConfirmDelete();
+          
+        });
+    }
+
+
+    function getProductById(productId) {
+        return $.ajax({
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            "type": "GET",
+            url: "http://localhost:8080/api/products/" + productId
+        })
+            .done((data) => {
+                console.log(data);
+                product = data;
+            })
+            .fail((err) => {
+                App.SweetAlert.showErrorAlert("fail id product");
+                console.log(err);
+            })
+    }
+
+    function handleShowCreatProduct(){
+        $('#create-modal').on('click', () => {
+            $('#modalCreateProduct').modal('show');
+        })
+    }
+
+
+    function handleShowUpdateProduct(){
+        $('button.edit').on('click', function () {
+
+            $.ajax({
+                headers: {
+                    "accept": "application/json",
+                    "content-type": "application/json"
+                },
+                type: "GET",
+                url: "http://localhost:8080/api/products/" + productId
+            })
+            .done((data) => {
+                product = data;
+                console.log(product)
+                category = product.category;
+
+                // category.id = $("#categoryCrea").val();
+                // category.title = $("#categoryCrea :selected").text();
+
+                $('#nameUp').val(product.title);
+                $('#imageUp').val(product.image);
+                $('#amountUp').val(product.quantity);
+                $('#priceUp').val(product.price);
+
+                $('#categoryUp').val(category.id);
+                $('#categoryUp :selected').val(category.title);
+
+
+                $('#modalUpdateProduct').modal('show');
+            })
+            .fail((jqXHR) => {
+                App.SweetAlert.showErrorAlert(jqXHR.responseJSON.message);
+                console.log(jqXHR);
+            })
+        });
+    }
+    function handleshowConfirmDelete(){
+        $("button.delete").on('click', () => {
+            console.log(productId)
+
+            App.SweetAlert.showConfirmDelete()
+                .then((result) => {
+                    console.log(result)
+                    if (result.value) {
+                        $.ajax({
+                            "type": "DELETE",
+                            "headers": {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            "url": "http://localhost:8080/api/products/delete" +"/"+ productId
+
+                        }).done( (data) => {
+                            console.log(data)
+                            App.SweetAlert.showSuccessAlert("Deleted success");
+                            $("#tr_" + productId).remove();
+
+                        }).fail( () => {
+                            App.SweetAlert.showErrorAlert("Deleted failed");
+                        });
+                    }
+                })
+        })
+    }
+
+    function unbindAll() {
+        $("#tbListProduct tbody tr").off();
+        $(".edit").off();
+        $(".delete").off();
+
+    }
+
+    //=====Seach====
+
+    $('#btn-search').on('click', function(){
+        let word = $('#input-search').val();
+        if(word === ""){
+            loadAllProduct();
+        }else{
+            search(word);
+        }
+    })
+
+
+    function search(word){
+        $.ajax({
+            headers: {
+                "Content-Type": "Application/json",
+                "Accept": "Application/json"
+            },
+            type: "GET",
+            url: page.urls.search + "/" + word
+        })
+        .done((data) => {
+            $('#tbListProduct tbody').html('');
+
+            $.each(data, (i, item) => {
+                product = item;
+                category = product.category;
+                addRowProduct();
+            })
+            unbindAll();
+            handleShowUpdateProduct();
+            handleshowConfirmDelete();
+        })
+    }
+
+    //======End Seach======
+
+    $("#btnCreateProduct").on("click", () =>{
+        category.id = $("#categoryCrea").val();
+        category.title = $("#categoryCrea  :selected").text();
+        delete product.id;
+        product.title = $("#nameCre").val();
+        product.image = $("#imageCrea").val();
+        product.quantity = $("#amountCrea").val();
+        product.price = $("#priceCrea").val();
+        product.category = category;
+        console.log(category)
+        console.log(product)
+
+        $.ajax({
+            headers:{
+                accept: "application/json",
+                "content-type" : "application/json"
+            },
+            type : "POST",
+            url:"http://localhost:8080/api/products/create",
+            data: JSON.stringify(product)
+
+        })
+        .done((data) =>{
+            console.log(data)
+            product = data;
+            category = product.category;
+            $('#modalCreateProduct').modal('hide');
+
+            addRowProduct();
+
+            App.IziToast.showSuccessAlert("Thêm sản phẩm thành công")
+
+            unbindAll();
+            handleShowCreatProduct();
+            handleshowConfirmDelete();
+            handleShowFooterProduct();
+
+        })
+        .fail((jqXHR) =>{
+            console.log(jqXHR);
+            $('#modalCreateProduct .modal-alert-danger ').html("").removeClass('hide').addClass('show');
+            if (jqXHR.responseJSON.message) {
+                let msg = jqXHR.responseJSON.message;
+
+                let str = `<label id="message-error" class="error" for="message">${msg}</label>`;
+
+                $('#modalCreateProduct .modal-alert-danger').append(str);
+            }
+            else
+            if (jqXHR.responseJSON) {
+                $.each(jqXHR.responseJSON, (key, item) => {
+                    let str = `<label id="${key}-error" class="error" for="${key}">${item}</label>`;
+                    $("#" + key).addClass("error");
+
+                    $('#modalCreateProduct .modal-alert-danger').append(str);
+                })
+            }
+            // App.IziToast.showErrorAlert("thêm sản phẩm thất bại")
+        })
+
+    })
+
+    $('#btnUpdateProduct').on("click", () =>{
+
+        category.id = $("#categoryUp").val();
+        category.title = $("#categoryUp :selected").text();
+
+        product.title = $("#nameUp").val();
+        product.image = $("#imageUp").val();
+        product.quantity = $("#amountUp").val();
+        product.price = $("#priceUp").val();
+        product.category = category;
+
+        $.ajax({
+            "headers": {
+                "accept": "application/json",
+                "content-type": "application/json"
+            },
+            "type": "POST",
+            "url": "http://localhost:8080/api/products/update/" + product.id,
+            "data": JSON.stringify(product)
+        })
+        .done((data) => {
+            product = data;
+            category = product.category;
+            console.log(product)
+
+            replaceRowProduct();
+
+            $('#modalUpdateProduct').modal('hide');
+
+            App.SweetAlert.showSuccessAlert('Update customer success');
+
+            unbindAll();
+            handleShowFooterProduct();
+
+        })
+        .fail((jqXHR) => {
+            console.log(jqXHR);
+            $('#modalUpdateProduct .modal-alert-danger').html('').removeClass('hide').addClass('show');
+
+            if (jqXHR.status === 401) {
+                let msg = "Please login !!";
+
+                let str = `<label id="message-error" class="error" for="message">${msg}</label>`;
+
+                $('#modalUpdateProduct .modal-alert-danger').append(str);
+            }
+            else {
+                if (jqXHR.status === 403) {
+                    let msg = "You are not authorized to perform this function !!";
+
+                    let str = `<label id="message-error" class="error" for="message">${msg}</label>`;
+
+                    $('#modalUpdateProduct .modal-alert-danger').append(str);
+                }
+                else {
+                    if (jqXHR.responseJSON.message) {
+                        let msg = jqXHR.responseJSON.message;
+
+                        let str = `<label id="message-error" class="error" for="message">${msg}</label>`;
+
+                        $('#modalUpdateProduct .modal-alert-danger').append(str);
+                    }
+                    else if (jqXHR.responseJSON) {
+                        $.each(jqXHR.responseJSON, (key, item) => {
+                            let str = `<label id="${key}-error" class="error" for="${key}">${item}</label>`;
+                            $("#" + key).addClass("error");
+
+                            $('#modalUpdateProduct .modal-alert-danger').append(str);
+                        })
+                    }
+                }
+            }
+
+
+        })
+    })
+
+    function doDelete(id) {
+        $.ajax({
+            type: "DELETE",
+            url: "http://localhost:8080/api/products/delete/" + id,
+            data: JSON.stringify(product)
+
+        })
+            .done(() => {
+                $('#tr_' + id).remove();
+
+                App.SweetAlert.showSuccessAlert("Xoá sản phẩm thành công")
+            })
+            .fail(() =>{
+                App.SweetAlert.showErrorAlert("sản phẩm không có")
+            })
+    }
+
+    function loadAllProduct(){
+        $.ajax({
+            "headers": {
+                "accept": "application/json",
+                "content-type": "application/json"
+            },
+            "type": "GET",
+            "url": "http://localhost:8080/api/products"
+        })
+            .done((data)=>{
+                $('#tbListProduct tbody').html(' ');
+                console.log(data)
+                $.each(data, (i,item) =>{
+                    product = item;
+                    category = product.category;
+                    addRowProduct();
+
+               //      let str = `
+               //      <tr id="tr_${product.id}">
+               //          <td class="text-center ">${product.id}</td>
+               //          <td class="text-center ">${product.title}</td>
+               //          <td class="text-center ">
+               //              <img width="60px" style="border-radius: 10px;" src="${product.image}">
+               //          </td>
+               //          <td class="text-center ">${product.quantity}</td>
+               //          <td class="text-center ">${product.price}</td>
+               //          <td class="text-center ">${category.title}</td>
+               //
+               //      </tr>
+               //
+               // ` ;
+               //
+               //      $("#tbListProduct tbody").append(str)
+                });
+                handleShowCreatProduct();
+                handleshowConfirmDelete();
+                handleShowFooterProduct();
+            }).fail(() => {
+            App.SweetAlert.showErrorAlert("Product Errors")
+        })
+    }
+
+    loadAllProduct();
+    
+    handleShowCreatProduct();
+    handleShowFooterProduct();
+</script>
+</body>
+</html>

@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("")
+@RequestMapping("/")
 public class HomeController {
 
     @Autowired
@@ -58,7 +58,9 @@ public class HomeController {
     @GetMapping("/product")
     public ModelAndView showProductPage() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("/product/list_Product");
+//        modelAndView.setViewName("/product/list_Product");
+        modelAndView.setViewName("/product/list-product");
+
         return modelAndView;
     }
 }

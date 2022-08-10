@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "users")
 @Accessors(chain = true)
-public class User {
+public class User extends BaseEntities{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,10 +38,6 @@ public class User {
     @OneToOne
     @JoinColumn(name = "location_region_id", nullable = false)
     private LocationRegion locationRegion;
-
-    private String registeredAt;
-
-    private String updatedAt;
 
     @Column(columnDefinition = " boolean default false")
     private boolean deleted;
